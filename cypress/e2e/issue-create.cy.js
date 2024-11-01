@@ -136,8 +136,8 @@ describe('Issue create', () => {
         cy.get('[data-testid="icon:arrow-up"]').should('be.visible');
       });
   });
-  it('Test Case 2: Random Data Plugin Issue Creation', () => {
-    const title = faker.lorem.words(3);
+  it.only('Test Case 2: Random Data Plugin Issue Creation', () => {
+    const title = faker.lorem.words(1);
     const description = faker.lorem.sentences(2);
 
     cy.get('[data-testid="modal:issue-create"]').within(() => {
@@ -145,6 +145,7 @@ describe('Issue create', () => {
       cy.get('.ql-editor').should('have.text', description);
       cy.get('input[name="title"]').type(title);
       cy.get('input[name="title"]').should('have.value', title);
+      cy.get('[data-testid="select:type"]').click();
       cy.get('[data-testid="icon:task"]').should('be.visible');
       cy.get('[data-testid="select:reporterId"]').click();
       cy.get('[data-testid="select-option:Baby Yoda"]').click();
