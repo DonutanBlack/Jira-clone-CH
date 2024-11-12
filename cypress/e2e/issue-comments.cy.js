@@ -68,4 +68,32 @@ describe('Issue comments creating, editing and deleting', () => {
             .find('[data-testid="issue-comment"]')
             .should('not.exist');
     });
+
+    const textAreaAddComment = () => cy.get('textarea[placeholder="Add a comment..."]');
+    const saveButton = () => cy.contains('button', 'Save');
+    const assertCommentExists = (comment) => cy.get(issueComment).should('contain.text', comment);
+    const confirmDeleteModalButton = () => cy.get('[data-testid="modal:confirm"]').contains('button', 'Delete comment')
+    const addCommentField = () => cy.contains('Add a comment...')
+    const newComment = 'VB Test comment';
+    const editedComment = 'VB Test comment edited';
+    const issueComment = '[data-testid="issue-comment"]';
+      
+          
+    it('Should create, edite and delete a comment successfully', () => {
+      
+        getIssueDetailsModal().should('be.visible').within(() => {
+         addCommentField().click();
+         textAreaAddComment().type(newComment);
+         saveButton().click().should('not.exist');
+         addCommentField().should('exist');
+         assertCommentExists(newComment);
+         cy.get(issueComment).first().contains('Edit').click().should('not.exist');
+         textAreaAddComment().clear().type(editedComment);
+         saveButton().click().should('not.exist');
+         assertCommentExists(editedComment);
+         cy.get(issueComment).first().contains('Delete').click();
+         });
+        confirmDeleteModalButton().click().should('not.exist');
+        getIssueDetailsModal().find(editedComment).should('not.exist');
+      });
 });
