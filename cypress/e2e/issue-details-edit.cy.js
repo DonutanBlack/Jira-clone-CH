@@ -61,5 +61,40 @@ describe('Issue details editing', () => {
     });
   });
 
+  
+  it("Bonus Task 1: Checking the dropdown “Priority”", () => {
+    const expectedLength = 5;
+    let priorityArray = [];
+    cy.get('[data-testid="select:priority"]')
+      .invoke("text")
+      .then((initialPriority) => {
+        priorityArray.push(initialPriority.trim());
+        cy.log("Initial priority:", initialPriority);
+      });
+    cy.get('[data-testid="select:priority"]').click();
+    cy.get('[data-testid^="select-option:"]')
+      .each(($el) => {
+        const priorityText = $el.text().trim();
+        priorityArray.push(priorityText);
+        cy.log("Added priority:", priorityText);
+        cy.log("Array length:", priorityArray.length);
+      })
+      .then(() => {
+        expect(priorityArray).to.have.length(expectedLength);
+      });
+  });
+
+  it("Bonus Task 2: checks that the reporter’s name contains only alphabetic characters", () => {
+    cy.get('[data-testid="select:reporter"]').click();
+    cy.get('[data-testid^="select-option:"]').each(($el) => {
+      const reporterName = $el.text().trim();
+      cy.log("Reporter Name:", reporterName);
+      const nameRegex = /^[A-Za-z\s]+$/;
+      expect(reporterName).to.match(
+        nameRegex,
+        "Reporter name contains only alphabetic characters and spaces"
+      );
+    });
+  });
   const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
 });
