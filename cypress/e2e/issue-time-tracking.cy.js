@@ -6,12 +6,14 @@ const backLogList = '[data-testid="board-list:backlog"]';
 const inputFieldTime = 'input[placeholder="Number"]';
 const estimatedTime = '10';
 const estimatedTimeText = 'h estimated';
+const closeIssue = () => cy.get('[data-testid="icon:close"]').first().click();
 const estimatedTimeUpdated = '20';
 const noTimeLogged = () => cy.contains('No time logged');
 const timeTrackingButton = '[data-testid="icon:stopwatch"]';
 const timeTrackingModal = '[data-testid="modal:tracking"]';
 const loggedTime = '2';
 const remainingTime = '5';
+const clickDoneButton = () => cy.contains('button', 'Done').click();
 const loggedTimeUpdated = '3';
 const remainingTimeUpdated = '4';
 const loggedTimeText = 'h logged';
@@ -45,7 +47,7 @@ describe("Time tracking functionality testing", () => {
         cy.get(inputFieldTime).type(estimatedTime);
         cy.get(inputFieldTime).should('have.value', estimatedTime);
         cy.contains(`${estimatedTime}${estimatedTimeText}`).should('be.visible');
-        cy.get('[data-testid="icon:close"]').first().click();
+        closeIssue();
         cy.reload();
         openIssue();
         cy.contains(`${estimatedTime}${estimatedTimeText}`).should('be.visible');
@@ -53,7 +55,7 @@ describe("Time tracking functionality testing", () => {
         cy.get(inputFieldTime).clear().type(estimatedTimeUpdated);
         cy.get(inputFieldTime).should('have.value', estimatedTimeUpdated);
         cy.contains(`${estimatedTimeUpdated}${estimatedTimeText}`).should('be.visible');
-        cy.get('[data-testid="icon:close"]').first().click();
+        closeIssue();
         cy.reload();
         openIssue();
         cy.contains(`${estimatedTimeUpdated}${estimatedTimeText}`).should('be.visible');
@@ -62,7 +64,7 @@ describe("Time tracking functionality testing", () => {
         cy.contains(`${estimatedTime}${estimatedTimeText}`).should('not.exist');
         cy.contains(`${estimatedTimeUpdated}${estimatedTimeText}`).should('not.exist');
         noTimeLogged().should('be.visible');
-        cy.get('[data-testid="icon:close"]').first().click();
+        closeIssue();
         cy.reload();
         openIssue();
         noTimeLogged().should('be.visible');
@@ -79,32 +81,25 @@ describe("Time tracking functionality testing", () => {
             .within(() => {
                 cy.get(inputFieldTime).eq(0).type(loggedTime);
                 cy.get(inputFieldTime).eq(1).type(remainingTime);
-
-                cy.contains('button', 'Done').click();
+                clickDoneButton();
             });
-
         cy.get(timeTrackingModal).should('not.exist');
-
         cy.contains(`${loggedTime}${loggedTimeText}`).should('be.visible');
         cy.contains(`${remainingTime}${remainingTimeText}`).should('be.visible');
         cy.contains(`${estimatedTime}${estimatedTimeText}`).should('not.exist');
+        noTimeLogged().should('not.exist');
 
-        // Add editing logged and remaining times
         cy.get(timeTrackingButton).click();
         cy.get(timeTrackingModal).should('be.visible')
             .within(() => {
                 cy.get(inputFieldTime).eq(0).type(loggedTimeUpdated);
                 cy.get(inputFieldTime).eq(1).type(remainingTimeUpdated);
-
-                cy.contains('button', 'Done').click();
+                clickDoneButton();
             });
-
         cy.get(timeTrackingModal).should('not.exist');
-
         cy.contains(`${loggedTimeUpdated}${loggedTimeText}`).should('be.visible');
         cy.contains(`${remainingTimeUpdated}${remainingTimeText}`).should('be.visible');
         cy.contains(`${estimatedTime}${estimatedTimeText}`).should('not.exist');
-
         noTimeLogged().should('not.exist');
 
         cy.get(timeTrackingButton).click();
@@ -112,12 +107,13 @@ describe("Time tracking functionality testing", () => {
             .within(() => {
                 cy.get(inputFieldTime).eq(0).clear();
                 cy.get(inputFieldTime).eq(1).clear();
-                cy.contains('button', 'Done').click();
+                clickDoneButton();
             });
-
         noTimeLogged().should('be.visible');
         cy.contains(`${loggedTime}${loggedTimeText}`).should('not.exist');
         cy.contains(`${remainingTime}${remainingTimeText}`).should('not.exist');
+        cy.contains(`${loggedTimeUpdated}${loggedTimeText}`).should('not.exist');
+        cy.contains(`${remainingTimeUpdated}${remainingTimeText}`).should('not.exist');
         cy.contains(`${estimatedTime}${estimatedTimeText}`).should('be.visible');
     });
 });
